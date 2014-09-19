@@ -15,7 +15,7 @@ namespace MyNet
                 Thread(const ThreadFunc& func, const std::string& name);
                 ~Thread();
                 void start();
-                void join();
+                int join();
             private:
                 static void runInThread(void *thread_obj);
             private:
