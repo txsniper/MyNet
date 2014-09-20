@@ -2,6 +2,7 @@ set(base_SRCS
   Condition.cc
   CountDownLatch.cc
   Thread.cc
+  Date.cc
   )
 
 add_library(mynet_base ${base_SRCS})
