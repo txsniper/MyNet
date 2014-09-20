@@ -5,6 +5,7 @@ namespace MyNet
 {
 namespace DateOp
 {
+	// http://www.faqs.org/faqs/calendars/faq/part2/
 	int getJulianDayNum(int year, int month, int day)
 	{
 		// make sure at least 32bit
