@@ -3,31 +3,29 @@
 
 #include "Mutex.h"
 #include "Condition.h"
+#include "NonCopyable.h"
 namespace MyNet
 {
-    namespace base
+namespace base
+{
+    class CountDownLatch: private Noncopyable
     {
-        class CountDownLatch
-        {
-            public:
-                CountDownLatch(int count)
-                    : m_count(count), m_mutex(), m_cond(m_mutex)
-                {
+        public:
+            CountDownLatch(int count)
+                : m_count(count), m_mutex(), m_cond(m_mutex)
+            {
 
-                }
-                ~CountDownLatch()
-                {
+            }
+            ~CountDownLatch(){}
 
-                }
-
-                void wait();
-                void countDown();
-                size_t getCount();
-            private:
-                int m_count;
-                MyNet::base::MutexLock m_mutex;
-                MyNet::base::Condition m_cond;
-        };
-    }
+            void wait();
+            void countDown();
+            size_t getCount();
+        private:
+            int m_count;
+            MyNet::base::MutexLock m_mutex;
+            MyNet::base::Condition m_cond;
+    };
+}
 }
 #endif
