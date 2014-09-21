@@ -1,7 +1,8 @@
 #ifndef _BASE_DATE_H_
 #define _BASE_DATE_H_
 #include <time.h>
-#include <string.h>
+#include <string>
+#include <stdint.h>
 namespace MyNet
 {
 namespace base
@@ -17,7 +18,6 @@ namespace base
 		} YearMonthDay;
 		static const int NumDaysPerWeek = 7;
 		static const int JulianDayOf1970_01_01;
-		
 		Date()
 		 : m_nJulianDayNum(0)
 		{
@@ -31,7 +31,7 @@ namespace base
 		}
 
 		Date(int year, int month, int day);
-		Date(const struct& tm);
+		Date(const struct tm&);
 
 		// convert to yyyy-mm-dd format 
 		std::string toString() const;

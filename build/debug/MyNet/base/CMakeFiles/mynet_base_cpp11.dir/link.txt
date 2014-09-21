@@ -1,0 +1,2 @@
+/usr/bin/ar cr libmynet_base_cpp11.a  CMakeFiles/mynet_base_cpp11.dir/Condition.cc.o CMakeFiles/mynet_base_cpp11.dir/CountDownLatch.cc.o CMakeFiles/mynet_base_cpp11.dir/Thread.cc.o CMakeFiles/mynet_base_cpp11.dir/Date.cc.o
+/usr/bin/ranlib libmynet_base_cpp11.a

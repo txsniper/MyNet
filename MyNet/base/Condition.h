@@ -6,7 +6,7 @@ namespace MyNet
 {
 namespace base
 {
-    class Condition: private Noncopyable
+    class Condition:private MyNet::Noncopyable
     {
         public:
             Condition(MutexLock& mutex)
@@ -38,7 +38,7 @@ namespace base
             bool waitForSeconds(int seconds);
         private:
             pthread_cond_t m_cond;
-            MutexLock m_mutex;
+            MutexLock& m_mutex;
     };
 }
 }

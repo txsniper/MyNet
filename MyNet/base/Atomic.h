@@ -8,7 +8,7 @@ namespace MyNet
 namespace base
 {
     template <typename T>
-    class AtomicIntegerT: private Noncopyalbe
+    class AtomicIntegerT: private MyNet::Noncopyable
     {
         public:
             AtomicIntegerT(T value)

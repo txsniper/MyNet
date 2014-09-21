@@ -24,27 +24,26 @@ namespace DateOp
   		int d = (4 * c + 3) / 1461;
   		int e = c - ((1461 * d) / 4);
   		int m = (5 * e + 2) / 153;
-  		Date::YearMonthDay ymd;
+        MyNet::base::Date::YearMonthDay ymd;
   		ymd.day = e - ((153 * m + 2) / 5) + 1;
   		ymd.month = m + 3 - 12 * (m / 10);
   		ymd.year = b * 100 + d - 4800 + (m / 10);
   		return ymd;
 	}
 }
-	MyNet::base::Date::JulianDayOf1970_01_01 = getYearMonthDay(1970,1,1);
-
+    const int MyNet::base::Date::JulianDayOf1970_01_01 = MyNet::DateOp::getJulianDayNum(1970,1,1);
 namespace base
 {
 	Date::Date(int year, int month, int day)
-	 : m_nJulianDayNum(getJulianDayNum(year, month, day))
+	 : m_nJulianDayNum(MyNet::DateOp::getJulianDayNum(year, month, day))
 	{
 
 	}
 
-	Date::Date(const struct& tm t)
-	 : m_nJulianDayNum(getJulianDayNum
+	Date::Date(const struct tm& t)
+	 : m_nJulianDayNum(MyNet::DateOp::getJulianDayNum
 	 	(
-	 		t.t.tm_year+1900,
+	 		t.tm_year+1900,
      		t.tm_mon+1,
         	t.tm_mday
         ))
@@ -56,13 +55,13 @@ namespace base
 	{
 		char buf[32] = {0};
 		YearMonthDay ymd(toYearMonthDay());
-		snprintf(buf, sizeof(buf), "%4d-%02d-%02d", ymd.year, ymd.month, ymd.day)
+		snprintf(buf, sizeof(buf), "%4d-%02d-%02d", ymd.year, ymd.month, ymd.day);
 		return buf;
 	}
 
-	Date::YearMonthDay toYearMonthDay() const
+	Date::YearMonthDay Date::toYearMonthDay() const
 	{
-		return getYearMonthDay(m_nJulianDayNum);
+		return MyNet::DateOp::getYearMonthDay(m_nJulianDayNum);
 	}
 }
 }

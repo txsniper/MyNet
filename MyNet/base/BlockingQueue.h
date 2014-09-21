@@ -11,7 +11,7 @@ namespace MyNet
 namespace base
 {
     template<typename T>
-    class BlockingQueue: private Noncopyable
+    class BlockingQueue: private MyNet::Noncopyable
     {
         public:
             BlockingQueue()

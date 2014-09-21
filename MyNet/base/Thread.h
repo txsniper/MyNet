@@ -9,7 +9,7 @@ namespace MyNet
 {
 namespace base
 {
-    class Thread : private Noncopyable
+    class Thread : private MyNet::Noncopyable
     {
         public:
             typedef boost::function<void()> ThreadFunc;
