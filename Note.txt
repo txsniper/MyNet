@@ -1,0 +1,14 @@
+                muduo的一些设计解析
+1.  线程的设计(Thread.h，Thread.cc)：
+    线程其实分为两个部分，一是其他线程可见的，另一部分是其他线程不可见的，
+其他线程可以通过可见的部分启动线程(start)，等待(join)，获取线程的Thread Id，
+因此muduo在设计Thread类的时候分了两个部分，Thread class是其他线程可见的，
+ThreadData则是执行线程私有的部分，两者都保存了执行线程的Thread Id，因此采用
+Thread class 采用shared_ptr来保存Thread id，而ThreadData用weak_ptr来保存
+
+
+2.  读写文件(FileUtil.h)
+    读文件ReadSmallFile(直接使用linux API)，写文件AppendFile(使用C库函数)，
+之所以AppendFile不使用API，估计是需要实现将文件从cache写到磁盘，因此直接使用
+c库的flush()搞定(总比自己调用sync强)
+

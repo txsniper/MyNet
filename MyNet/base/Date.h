@@ -37,9 +37,44 @@ namespace base
 		std::string toString() const;
 
 		YearMonthDay toYearMonthDay() const;
+
+        int julianDayNumber() const
+        {
+            return m_nJulianDayNum;
+        }
+
+        int year() const
+        {
+            return toYearMonthDay().year;
+        }
+
+        int month() const
+        {
+            return toYearMonthDay().month;
+        }
+
+        int day() const
+        {
+            return toYearMonthDay().day;
+        }
+
+        bool valid() const
+        {
+            return (m_nJulianDayNum > 0);
+        }
 	private:
 		int m_nJulianDayNum;
 	};
+
+    inline bool operator < (Date a, Date b)
+    {
+        return a.julianDayNumber() < b.julianDayNumber();
+    }
+
+    inline bool operator == (Date a, Date b)
+    {
+        return a.julianDayNumber() == b.julianDayNumber();
+    }
 }
 }
 #endif

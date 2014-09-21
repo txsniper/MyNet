@@ -34,8 +34,8 @@ namespace DateOp
     const int MyNet::base::Date::JulianDayOf1970_01_01 = MyNet::DateOp::getJulianDayNum(1970,1,1);
 namespace base
 {
-	Date::Date(int year, int month, int day)
-	 : m_nJulianDayNum(MyNet::DateOp::getJulianDayNum(year, month, day))
+	Date::Date(int iyear, int imonth, int iday)
+	 : m_nJulianDayNum(MyNet::DateOp::getJulianDayNum(iyear, imonth, iday))
 	{
 
 	}
