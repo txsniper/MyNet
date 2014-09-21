@@ -1,2 +1,0 @@
-/home/sniper/github/MyNet/build/debug/MyNet/base/CMakeFiles/mynet_base.dir
-/home/sniper/github/MyNet/build/debug/MyNet/base/CMakeFiles/mynet_base_cpp11.dir
