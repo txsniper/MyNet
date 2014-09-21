@@ -71,8 +71,8 @@ namespace base
             volatile T m_value;
 
     };
-    typename AtomicIntegerT<int32_t> AtomicInt32;
-    typename AtomicIntegerT<int64_t> AtomicInt64;
+    typedef AtomicIntegerT<int32_t> AtomicInt32;
+    typedef AtomicIntegerT<int64_t> AtomicInt64;
 }
 }
 #endif

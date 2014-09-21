@@ -3,10 +3,13 @@
 #include <sys/syscall.h>
 #include <pthread.h>
 #include <assert.h>
+#include <boost/weak_ptr.hpp>
+#include <boost/shared_ptr.hpp>
+
 namespace MyNet
 {
-    namespace ThreadOp
-    {
+namespace ThreadOp
+{
         __thread int t_cachedtid = 0;
         __thread const char* t_threadname = "default";
 
@@ -22,7 +25,44 @@ namespace MyNet
                 t_cachedtid = gettid();
             }
         }
-    }
+
+        typedef struct ThreadData
+        {
+            typedef MyNet::base::Thread::ThreadFunc ThreadFunc;
+            ThreadFunc m_func;
+            std::string m_name;
+            boost::weak_ptr<pid_t> m_wktid;
+
+            ThreadData(const ThreadFunc& func,
+                        const std::string& name,
+                        const boost::shared_ptr<pid_t>& sharedtid)
+                : m_func(func), m_name(name), m_wktid(sharedtid)
+            {
+
+            }
+
+            void runInThread()
+            {
+                pid_t tid = MyNet::ThreadOp::tid();
+                boost::shared_ptr<pid_t> ptid = m_wktid.lock();
+                if(ptid)
+                {
+                    *ptid = tid;
+                    ptid.reset(); // 上面的lock增加了引用计数，这里reset减小它
+                }
+
+                m_func();
+            }
+        } ThreadData;
+
+        void* startThread(void* thread_data)
+        {
+            ThreadData* td = static_cast<ThreadData*> (thread_data);
+            td->runInThread();
+            delete td;
+            return NULL;
+        }
+}
 }
 
 MyNet::base::Thread::Thread(const ThreadFunc& func, const std::string& name)
@@ -31,7 +71,7 @@ MyNet::base::Thread::Thread(const ThreadFunc& func, const std::string& name)
       m_joined(false), 
       m_func(func)
 {
-
+    m_ThreadNum.incAndGet();
 }
 
 MyNet::base::Thread::~Thread()
@@ -45,20 +85,18 @@ MyNet::base::Thread::~Thread()
 void MyNet::base::Thread::start()
 {
     assert(!m_started);
-    if(!pthread_create(&m_threadId, NULL, runInThread, this))
+    MyNet::ThreadOp::ThreadData* thread_data = new MyNet::ThreadOp::ThreadData(m_func, m_name, m_sharedtid);
+    if(!pthread_create(&m_threadId, NULL, MyNet::ThreadOp::startThread, this))
     {
         // create success
         m_started = true;
     }
+    else
+    {
+        delete thread_data;
+    }
 }
 
-void* MyNet::base::Thread::runInThread(void* thread_obj)
-{
-    MyNet::base::Thread * thread = static_cast<MyNet::base::Thread*> (thread_obj);
-    thread->m_tid = MyNet::ThreadOp::tid();
-    thread->m_func();
-    return NULL;
-}
 
 int MyNet::base::Thread::join()
 {
