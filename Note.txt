@@ -9,6 +9,6 @@ Thread class 采用shared_ptr来保存Thread id，而ThreadData用weak_ptr来保
 
 2.  读写文件(FileUtil.h)
     读文件ReadSmallFile(直接使用linux API)，写文件AppendFile(使用C库函数)，
-之所以AppendFile不使用API，估计是需要实现将文件从cache写到磁盘，因此直接使用
-c库的flush()搞定(总比自己调用sync强)
+而不使用API，因为AppendFile需要手动的控制flush，如果使用write系统调用，可
+能会因为频繁的write降低性能(write需要进行用户空间和内核空间的转换)。
 
