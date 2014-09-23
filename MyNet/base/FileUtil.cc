@@ -4,7 +4,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <assert.h>
-
+#include <errno.h>
+#include <string.h>
 namespace MyNet
 {
 namespace base
@@ -49,7 +50,7 @@ namespace base
                 m_buff[ret] = '\0';
                 if(size)
                 {
-                    *size = static_cast<int> (n);
+                    *size = static_cast<int> (ret);
                 }
             }
             else
@@ -131,7 +132,7 @@ namespace base
     WriteFile::WriteFile(const std::string& filename)
         : m_filename(filename),
           m_file(::fopen(filename.c_str(), "ae")),
-          m_nBytesWritten(0)
+          m_nBytesWritten(0),
           m_valid(true)
     {
         if(m_file == NULL)
@@ -150,11 +151,11 @@ namespace base
         }
     }
 
-    WriteFile::flush()
+    void WriteFile::flush()
     {
         if(m_valid)
         {
-            ::flush(m_file);
+            ::fflush(m_file);
         }
     }
     size_t WriteFile::writeLine(const std::string& line)
@@ -167,7 +168,6 @@ namespace base
         size_t ret = 0;
         size_t remain = n;
         size_t startPos = 0;
-        int err = m_err;
         if(m_valid)
         {
             do
@@ -175,7 +175,7 @@ namespace base
                 ret = write(line + startPos, remain);
                 if(ret == 0)
                 {
-                    err = ::ferror(m_file);
+                    int err = ::ferror(m_file);
                     if(err)
                     {
                         // error occured
@@ -187,6 +187,7 @@ namespace base
                 startPos += ret;
             } while(remain > 0);
             m_nBytesWritten += n;
+            return n;
         }
         else
         {

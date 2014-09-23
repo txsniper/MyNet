@@ -1,8 +1,9 @@
 #ifndef _BASE_FILE_UTIL_H_
 #define _BASE_FILE_UTIL_H_
 #include "NonCopyable.h"
-#include <string.h>
+#include <string>
 #include <stdio.h>
+#include <stdint.h>
 namespace MyNet
 {
 namespace base
@@ -40,15 +41,15 @@ namespace base
         private:
             size_t write(const char* line, size_t n);
         public:
-            const static kBUFF_SIZE = 64 * 1024;
+            const static int kBUFF_SIZE = 64 * 1024;
         private:
             std::string m_filename;
             FILE* m_file;
             size_t m_nBytesWritten;
             bool m_valid;
             char m_buff[kBUFF_SIZE];
-    }
+    };
 }
 }
 
-endif
+#endif
