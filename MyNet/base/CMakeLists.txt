@@ -3,6 +3,7 @@ set(base_SRCS
   CountDownLatch.cc
   Thread.cc
   Date.cc
+  FileUtil.cc
   )
 
 add_library(mynet_base ${base_SRCS})
