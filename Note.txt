@@ -8,7 +8,9 @@ Thread class 采用shared_ptr来保存Thread id，而ThreadData用weak_ptr来保
 
 
 2.  读写文件(FileUtil.h)
-    读文件ReadSmallFile(直接使用linux API)，写文件AppendFile(使用C库函数)，
+    2.1 读文件ReadSmallFile(直接使用linux API)，写文件AppendFile(使用C库函数)，
 而不使用API，因为AppendFile需要手动的控制flush，如果使用write系统调用，可
 能会因为频繁的write降低性能(write需要进行用户空间和内核空间的转换)。
+    2.2 AppendFile写文件的时候使用fwrite_unlocked，因为muduo的AppendFile用来
+写日志文件，每个文件的写入只有一个线程去完成，因此不需要fwrite来加锁互斥访问
 
