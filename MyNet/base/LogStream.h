@@ -7,6 +7,8 @@ namespace MyNet
 {
 namespace base
 {
+    const int kSmallBuffer = 4000;
+    const int kLargeBuffer = 4000 * 1000;
     template <int SIZE>
     class FixedBuffer : private MyNet::Noncopyable
     {
@@ -14,6 +16,7 @@ namespace base
             FixedBuffer();
             ~FixedBuffer();
             size_t append(const char* line, const size_t length);
+            size_t appendPartial(const char* line, const size_t length);
             void setCookie(void (*cookie)());
 
             size_t avail() { return (end()- m_cur);}
@@ -30,6 +33,21 @@ namespace base
             char* m_cur;
             char m_buff[SIZE];
 
+    };
+
+    class LogStream : private MyNet::Noncopyable
+    {
+        public:
+            typedef FixedBuffer<kSmallBuffer> Buffer;
+
+            LogStream& operator << (const std::string line);
+            LogStream& operator << (const char* line);
+            LogStream& operator << (bool b);
+            LogStream& operator << (int i);
+            LogStream& operator << (long i);
+
+        private:
+            Buffer m_buff;
     };
 }
 }
