@@ -14,7 +14,7 @@ Thread class 采用shared_ptr来保存Thread id，而ThreadData用weak_ptr来保
     2.2 AppendFile写文件的时候使用fwrite_unlocked，因为muduo的AppendFile用来
 写日志文件，每个文件的写入只有一个线程去完成，因此不需要fwrite来加锁互斥访问
 
-3.  Singleton
+3.  Singleton(Singleton.h)
     Singleton设计为模板类，数据成员为static，使得每个类型只有一个对象，在销毁
 对象时，使用sizeof(T)检测T是否是一个完整类型，因为对不完整类型的指针调用delete
 时只会销毁指针，不会调用它的析构函数。
