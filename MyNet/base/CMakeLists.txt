@@ -5,6 +5,7 @@ set(base_SRCS
   Date.cc
   FileUtil.cc
   LogStream.cc
+  Timestamp.cc
   )
 
 add_library(mynet_base ${base_SRCS})
