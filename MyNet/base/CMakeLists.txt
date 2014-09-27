@@ -4,6 +4,7 @@ set(base_SRCS
   Thread.cc
   Date.cc
   FileUtil.cc
+  LogStream.cc
   )
 
 add_library(mynet_base ${base_SRCS})
