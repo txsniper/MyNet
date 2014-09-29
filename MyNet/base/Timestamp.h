@@ -55,6 +55,22 @@ namespace base
             int64_t m_microSecsSinceEpoch;
 
     };
+
+    inline bool operator < (Timestamp a, Timestamp b)
+    {
+        return a.microSecsSinceEpoch() < b.microSecsSinceEpoch();
+    }
+
+    inline bool operator == (Timestamp a, Timestamp b)
+    {
+        return a.microSecsSinceEpoch() == b.microSecsSinceEpoch();
+    }
+
+    inline double timeDifference(Timestamp a, Timestamp b)
+    {
+        int64_t diff = a.microSecsSinceEpoch() - b.microSecsSinceEpoch();
+        return static_cast<double>(diff) / Timestamp::kMicroSecsPerSecond;
+    }
 }
 }
 #endif
