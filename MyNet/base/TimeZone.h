@@ -31,9 +31,8 @@ namespace base
             static time_t fromUTCTime(const struct tm&);
             static time_t fromUTCTime(int year, int month, int day,
                                       int hour, int minute, int seconds);
-
-        private:
             struct Data;
+        private:
             boost::shared_ptr<Data> m_spDate;
 
     };
