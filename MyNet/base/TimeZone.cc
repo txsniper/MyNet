@@ -24,10 +24,10 @@ namespace base
         }
     };
 
-    struct comp
+    struct Comp
     {
         bool compareGMT;
-        comp(bool gmt)
+        Comp(bool gmt)
             : compareGMT(gmt)
         {
 
@@ -140,7 +140,92 @@ namespace base
 
     bool readTimeZoneFile(const char* zonefile, struct TimeZone::Data* data)
     {
+        File f(zonefile);
+        if(f.valid())
+        {
+            std::string head = f.readBytes(4);
+            if(head != "TZif")
+                return false;
+            std::string version = f.readBytes(1);
+            f.readBytes(15);
+
+            int32_t isgmtcnt = f.readInt32();
+            int32_t isstdcnt = f.readInt32();
+            int32_t leapcnt = f.readInt32();
+            int32_t timecnt = f.readInt32();
+            int32_t typecnt = f.readInt32();
+            int32_t charcnt = f.readInt32();
+
+            std::vector<int32_t> trans;
+            std::vector<int> localtimes;
+            trans.reserve(timecnt);
+            for(int i = 0; i < timecnt; ++i)
+            {
+                trans.push_back(f.readInt32());
+            }
+
+            for(int i = 0; i < timecnt; ++i)
+            {
+                uint8_t local = f.readUint8();
+                localtimes.push_back(local);
+            }
+
+            for(int i = 0; i < typecnt; ++i)
+            {
+                int32_t gmtoff = f.readInt32();
+                uint8_t isdst = f.readUint8();
+                uint8_t abbrind = f.readUint8();
+                data->localtimes.push_back(LocalTime(gmtoff, isdst, abbrind));
+            }
+
+            for(int i = 0; i < timecnt; ++i)
+            {
+                int localIdx = localtimes[i];
+                time_t localtime = trans[i] + data->localtimes[localIdx].gmtOffset;
+                data->transitions.push_back(Transition(trans[i], localtime, localIdx));
+            }
+
+            data->abbreviation = f.readBytes(charcnt);
+            for(int i = 0; i < leapcnt; ++i)
+            {
+
+            }
+
+            (void) isstdcnt;
+            (void) isgmtcnt;
+        }
         return true;
+
+    }
+
+    const LocalTime* findLocalTime(const TimeZone::Data& data, Transition sentry, Comp comp)
+    {
+        const LocalTime* local = NULL;
+        if(data.transitions.empty() || comp(sentry, data.transitions.front()))
+        {
+            local = &data.localtimes.front();
+        }
+        else
+        {
+            std::vector<Transition>::const_iterator transI = lower_bound(data.transitions.begin(),
+                                                                         data.transitions.end(),
+                                                                         sentry,
+                                                                         comp);
+            if(transI != data.transitions.end())
+            {
+                if(!comp.equal(sentry, *transI))
+                {
+                    assert(transI != data.transitions.begin());
+                    --transI;
+                }
+                local = &data.localtimes[transI->localtimeIdx];
+            }
+            else
+            {
+                local = &data.localtimes[data.transitions.back().localtimeIdx];
+            }
+        }
+        return local;
     }
 }
 }
