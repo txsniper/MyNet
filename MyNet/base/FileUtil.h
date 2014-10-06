@@ -14,7 +14,7 @@ namespace base
             ReadSmallFile(const std::string& filename);
             ~ReadSmallFile();
             int readToBuffer(int *size);
-            int readToString(std::string& data, int64_t maxSize, int64_t *fileSize,
+            int readToString(int64_t maxSize, std::string& data, int64_t *fileSize,
                              int64_t *modifyTime, int64_t* createTime);
             const char* buffer() {return m_buff;}
         public:
@@ -49,6 +49,19 @@ namespace base
             bool m_valid;
             char m_buff[kBUFF_SIZE];
     };
+
+    int readFile(const std::string& filename,
+                 int maxSize,
+                 std::string* content,
+                 int64_t* fileSize = NULL,
+                 int64_t* modifyTime = NULL,
+                 int64_t* createTime = NULL)
+    {
+        ReadSmallFile file(filename);
+        return file.readToString(maxSize, *content, fileSize, modifyTime, createTime);
+    }
+
+
 }
 }
 

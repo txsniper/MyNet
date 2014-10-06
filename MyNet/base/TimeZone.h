@@ -13,7 +13,7 @@ namespace base
     {
         public:
             explicit TimeZone(const char* zone_file);
-            TimeZone(int eastofUt, const char* tzname);
+            TimeZone(int eastofUtc, const char* tzname);
             TimeZone() {}
 
             bool valid()

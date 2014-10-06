@@ -61,7 +61,7 @@ namespace base
         return err;
     }
 
-    int ReadSmallFile::readToString(std::string& data, int64_t maxSize,
+    int ReadSmallFile::readToString(int64_t maxSize, std::string& data,
                                     int64_t* fileSize, int64_t* modifyTime,
                                     int64_t* createTime)
     {
@@ -199,5 +199,6 @@ namespace base
     {
         return ::fwrite_unlocked(line, n, 1, m_file);
     }
+
 }
 }
