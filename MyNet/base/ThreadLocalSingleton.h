@@ -35,7 +35,7 @@ namespace base
             {
                 assert(obj == m_t_value);
                 T* t_obj = static_cast<T*>(obj);
-                typedef char TMustBeCompleteType[sizeof(T) ? -1:];
+                typedef char TMustBeCompleteType[sizeof(T) ? -1 : 1];
                 TMustBeCompleteType dummy;
                 (void)dummy;
                 delete t_obj;
