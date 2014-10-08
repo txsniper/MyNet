@@ -22,3 +22,6 @@ Thread class 采用shared_ptr来保存Thread id，而ThreadData用weak_ptr来保
     http://kelvinh.github.io/blog/2013/08/28/memory-leak-of-incomplete-type/
     http://stackoverflow.com/questions/5606750/deletion-of-pointer-to-incomplete-type-and-smart-pointers
 
+4.  ProcessInfo获取进程信息(ProcessInfo.h, ProcessInfo.cc)
+    通过读"/proc/self/"下的文件获取当前进程的信息(打开的文件数量:/proc/self/fd/，线程数量:
+    /proc/self/task/ 等等)
