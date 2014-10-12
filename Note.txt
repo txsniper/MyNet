@@ -31,3 +31,15 @@ Thread class 采用shared_ptr来保存Thread id，而ThreadData用weak_ptr来保
 6.  ProcessInfo获取进程信息(ProcessInfo.h, ProcessInfo.cc)
     通过读"/proc/self/"下的文件获取当前进程的信息(打开的文件数量:/proc/self/fd/，线程数量:
     /proc/self/task/ 等等)
+
+7. 多线程日志的实现:
+   7.1 要点：(1). 每个线程写一个日志文件，因此可以使用fwrite_nonlocked
+             (2). 日志文件的滚动(roll)有两个条件：1. rollSize  2. rollPeriod，
+                  日志文件写到磁盘(flush)也是两个条件：1. 向日志文件写入数据(append)次数
+                  2. flush Period.
+             (3). 定时flush或roll并没有使用一个timer去跑(再次注意linux下的timer和windows很不同，
+                  不能用windows的想法来实现)，muduo使用Condition(条件变量)的超时等待功能实现
+                  定时flush和定时roll
+                  eg: AsyncLogging.cc : AsyncLogging::threadFunc
+                                        ----> cond_.waitForSeconds(flushInterval_);
+
