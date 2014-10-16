@@ -13,10 +13,19 @@ namespace base
     class LogFile : private MyNet::Noncopyable
     {
         public:
-            LogFile(bool threadsafe, size_t rollsize,
-                    const std::string& basename, int flushInterval
+            LogFile(bool threadsafe,
+                    size_t rollsize,
+                    const std::string& basename,
+                    int flushInterval,
+                    int checkEveryN
                     );
+            bool append(const char* line, size_t n);
+            void flush();
+            void rollFile();
+
         private:
+            void append_unlocked(const char* line, size_t n);
+            static std::string getLogFileName();
             boost::scoped_ptr<base::MutexLock> m_mutexLock;
             boost::scoped_ptr<base::WriteFile> m_scpFile;
 
