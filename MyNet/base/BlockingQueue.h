@@ -29,7 +29,7 @@ namespace base
                 assert(!m_deque.empty());
                 T value(m_deque.front());
                 m_deque.pop_front();
-                return T;
+                return value;
             }
             void put(const T& value)
             {

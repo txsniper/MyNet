@@ -1,2 +1,4 @@
-#add_executable()
-#target_link_libraries()
+add_executable(atomic_unittest Atomic_unittest.cc)
+target_link_libraries(atomic_unittest mynet_base)
+add_executable(blockingQueue_unittest BlockingQueue_unittest.cc)
+target_link_libraries(blockingQueue_unittest mynet_base)

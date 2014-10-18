@@ -65,6 +65,7 @@ namespace ThreadOp
 }
 }
 
+MyNet::base::AtomicInt32 MyNet::base::Thread::m_ThreadNum;
 MyNet::base::Thread::Thread(const ThreadFunc& func, const std::string& name)
     : m_name(name), 
       m_started(false), 
