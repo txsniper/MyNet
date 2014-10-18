@@ -1,4 +1,5 @@
 #include "LogFile.h"
+#include "ProcessInfo.h"
 namespace MyNet
 {
 
@@ -9,7 +10,7 @@ namespace base
                     const std::string& basename,
                     int flushInterval,
                     int checkEveryN)
-        : m_mutexLock(threadsafe ?new MutexLock() : NULL),
+        : m_mutexLock(threadsafe ?new base::MutexLock() : NULL),
           m_scpFile(new base::WriteFile(basename)),
           m_bThreadSafe(threadsafe),
           m_rollSize(rollsize),
@@ -24,18 +25,56 @@ namespace base
     {
         if( m_mutexLock )
         {
-            MyNet::base::MutexLockGuard(*m_mutexLock);
+            MyNet::base::MutexLockGuard lock(*m_mutexLock);
             append_unlocked(line, n);
+            return true;
         }
         else
         {
             append_unlocked(line, n);
+            return true;
+        }
+    }
+
+    void LogFile::flush()
+    {
+        if( m_mutexLock )
+        {
+            MyNet::base::MutexLockGuard lock(*m_mutexLock);
+            m_scpFile->flush();
+        }
+        else
+        {
+            m_scpFile->flush();
         }
     }
 
     void LogFile::append_unlocked(const char* line, size_t n)
     {
         m_scpFile->writeLine(line, n);
+        if(m_scpFile->size() >= m_rollSize)
+        {
+            rollFile();
+        }
+        else
+        {
+            ++m_appendCount;
+            if( m_appendCount >= m_checkEveryN)
+            {
+                m_appendCount = 0;
+                time_t now = ::time(NULL);
+                time_t thisPeriod = now / m_rollPeriod * m_rollPeriod;
+                if(thisPeriod != m_startPeriod)
+                {
+                    rollFile();
+                }
+                else if (now - m_lastFlush >= m_flushInterval)
+                {
+                    m_lastFlush = now;
+                    flush();
+                }
+            }
+        }
     }
 
     std::string LogFile::getLogFileName(const std::string& basename, time_t* now)
@@ -45,13 +84,13 @@ namespace base
         filename = basename;
         char tmpbuffer[32] = {0};
         struct tm tm;
-        *now = time(NULL);
-        gmtime_r(*now, &tm);
-        strftime(timebuf, sizeof timebuf, ".%Y%m%d-%H%M%S.", &tm);
-        filename += timebuf;
-        filename += ProcessInfo::hostname();
+        *now = ::time(NULL);
+        gmtime_r(now, &tm);
+        strftime(tmpbuffer, sizeof tmpbuffer, ".%Y%m%d-%H%M%S.", &tm);
+        filename += tmpbuffer;
+        filename += MyNet::ProcInfo::hostname();
         char pidbuf[32];
-        snprintf(pidbuf, sizeof pidbuf, ".%d", ProcessInfo::pid());
+        snprintf(pidbuf, sizeof pidbuf, ".%d", MyNet::ProcInfo::pid());
         filename += pidbuf;
         filename += ".log";
         return filename;

@@ -9,6 +9,7 @@ set(base_SRCS
   TimeZone.cc
   ThreadPool.cc
   ProcessInfo.cc
+  LogFile.cc
   )
 
 add_library(mynet_base ${base_SRCS})

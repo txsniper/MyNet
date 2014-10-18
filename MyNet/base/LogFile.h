@@ -21,11 +21,11 @@ namespace base
                     );
             bool append(const char* line, size_t n);
             void flush();
-            void rollFile();
+            bool rollFile();
 
         private:
             void append_unlocked(const char* line, size_t n);
-            static std::string getLogFileName();
+            static std::string getLogFileName(const std::string& basename, time_t* now);
             boost::scoped_ptr<base::MutexLock> m_mutexLock;
             boost::scoped_ptr<base::WriteFile> m_scpFile;
 
@@ -33,6 +33,7 @@ namespace base
             time_t m_lastFlush;     // 上一次写入磁盘的时间
             time_t m_lastRoll;      // 上一次回滚时间
             bool m_bThreadSafe;
+            int m_appendCount;      // Append写入文件的次数
             const size_t m_rollSize;        // 日志文件回滚的大小
             const std::string m_basename;   // 日志文件基础名字
             const int m_flushInterval;      // 写到硬盘的时间间隔

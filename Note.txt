@@ -32,14 +32,42 @@ Thread class 采用shared_ptr来保存Thread id，而ThreadData用weak_ptr来保
     通过读"/proc/self/"下的文件获取当前进程的信息(打开的文件数量:/proc/self/fd/，线程数量:
     /proc/self/task/ 等等)
 
-7. 多线程日志的实现:
-   7.1 要点：(1). 每个线程写一个日志文件，因此可以使用fwrite_nonlocked
-             (2). 日志文件的滚动(roll)有两个条件：1. rollSize  2. rollPeriod，
-                  日志文件写到磁盘(flush)也是两个条件：1. 向日志文件写入数据(append)次数
-                  2. flush Period.
-             (3). 定时flush或roll并没有使用一个timer去跑(再次注意linux下的timer和windows很不同，
-                  不能用windows的想法来实现)，muduo使用Condition(条件变量)的超时等待功能实现
-                  定时flush和定时roll
-                  eg: AsyncLogging.cc : AsyncLogging::threadFunc
+7.  日期计算(Date.h Date.cc)
+    日期计算使用儒略日(Julian Day)方式，算法见：
+    http://www.faqs.org/faqs/calendars/faq/part2/
+
+8.  计时(Timestamp.h Timestamp.cc)
+    Timestamp使用了UTC时间，精度为微秒(使用gettimeofday实现，在新的内核上，gettimeofday不再是
+    syscall，从而没有内核态和用户态切换的开销)。
+    对于精度要求不高的场合，直接使用time()获取时间。
+        eg: 多线程日志的实现中计时功能
+
+9.  多线程日志的实现:
+    9.1 设计：
+
+    user线程：
+        
+        LOG_INFO << "Some info need to record";   ===> 创建一个Logger类型的匿名对象，向它的LogStream写入
+                         ||                            数据，匿名对象随后销毁，调用Logger的析构函数,
+                         ||                            ~Logger()会根据设定的输出函数将LogStream中的
+                        \  /                           数据输出到输出函数中。
+                         \/
+        
+        LOG_INFO(or LOG_DEBUG 等宏):
+        LogFile:   日志文件类，每一个LogFile代表了以basename_为基准文件名的一类日志文件，在
+                   一定条件下(超时 and 写入数据的大小)flush或roll，外界只需要提供运行参数(basename, flushInterval)
+                   并写入数据即可
+        LogStream: 包含一个缓冲区的日志流，通过重载operator<<实现将各种类型的数据格式化写入
+                   缓冲区。
+        Logger(Logging.h): Logger类
+
+    9.2 要点：(1). 每个线程写一个日志文件，因此可以使用fwrite_nonlocked
+              (2). 日志文件的滚动(roll)有两个条件：1. rollSize  2. rollPeriod，
+                   日志文件写到磁盘(flush)也是两个条件：1. 向日志文件写入数据(append)次数
+                   2. flush Period.
+              (3). 定时flush或roll并没有使用一个timer去跑(再次注意linux下的timer和windows很不同，
+                   不能用windows的想法来实现)，muduo使用Condition(条件变量)的超时等待功能实现
+                   定时flush和定时roll
+                   eg: AsyncLogging.cc : AsyncLogging::threadFunc
                                         ----> cond_.waitForSeconds(flushInterval_);
 
