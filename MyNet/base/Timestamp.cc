@@ -45,7 +45,7 @@ namespace base
         return Timestamp(seconds * kMicroSecsPerSecond + tv.tv_usec);
     }
 
-    Timestamp invalid()
+    Timestamp Timestamp::invalid()
     {
         return Timestamp();
     }

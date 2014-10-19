@@ -87,3 +87,27 @@ Thread class 采用shared_ptr来保存Thread id，而ThreadData用weak_ptr来保
                    eg: AsyncLogging.cc : AsyncLogging::threadFunc
                                         ----> cond_.waitForSeconds(flushInterval_);
 
+10. boost的一些用法：
+    10.1 boost::bind : boost::bind不仅能用来绑定函数传递参数，还用在foreach循环中调用每个成员
+         的函数
+         boost::ptr_vector<muduo::Thread> threads_;
+         ... // 向threads_中填充Thread
+         foreach(threads_.begin(), threads_.end(), boost::bind(&muduo::Thread::start, _1));
+         等价于：
+                for(boost::ptr_vector<muduo::Thread>::const_iterator it = threads_.begin(); it != threads_.end(); ++it)
+                {
+                    (*it)->start();
+                }
+
+        类似的方式：
+            #include <algorithm>  // for_each
+            #include <functional> // bind
+
+            // ...
+
+            std::for_each(container.begin(), container.end(), std::bind(&Type::func));
+
+            std::for_each(foo_vector.begin(), foo_vector.end(),std::bind(&Foo::func, std::placeholders::_1));
+
+            reference:
+                http://stackoverflow.com/questions/719043/call-member-function-on-each-element-in-a-container
