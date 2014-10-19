@@ -22,6 +22,7 @@ namespace base
 
             void wait()
             {
+                MutexLock::UnassginMutexLockGuard ug(m_mutex);
                 pthread_cond_wait(&m_cond, m_mutex.getMutex());
             }
 

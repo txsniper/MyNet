@@ -43,6 +43,7 @@ namespace ThreadOp
 
             void runInThread()
             {
+                MyNet::ThreadOp::t_threadname = m_name.c_str();
                 pid_t tid = MyNet::ThreadOp::tid();
                 boost::shared_ptr<pid_t> ptid = m_wktid.lock();
                 if(ptid)
@@ -67,9 +68,10 @@ namespace ThreadOp
 
 MyNet::base::AtomicInt32 MyNet::base::Thread::m_ThreadNum;
 MyNet::base::Thread::Thread(const ThreadFunc& func, const std::string& name)
-    : m_name(name), 
-      m_started(false), 
-      m_joined(false), 
+    : m_sharedtid(new pid_t(0)),
+      m_name(name),
+      m_started(false),
+      m_joined(false),
       m_func(func)
 {
     m_ThreadNum.incAndGet();
@@ -87,7 +89,7 @@ void MyNet::base::Thread::start()
 {
     assert(!m_started);
     MyNet::ThreadOp::ThreadData* thread_data = new MyNet::ThreadOp::ThreadData(m_func, m_name, m_sharedtid);
-    if(!pthread_create(&m_threadId, NULL, MyNet::ThreadOp::startThread, this))
+    if(!pthread_create(&m_threadId, NULL, MyNet::ThreadOp::startThread, thread_data))
     {
         // create success
         m_started = true;
@@ -103,5 +105,6 @@ int MyNet::base::Thread::join()
 {
     assert(m_started);
     assert(!m_joined);
+    m_joined = true;
     return pthread_join(m_threadId, NULL);
 }

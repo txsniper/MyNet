@@ -23,20 +23,24 @@ namespace base
                 }
                 void lock()
                 {
-                    assert(m_holder == 0);
-                    m_holder = MyNet::ThreadOp::tid();
                     pthread_mutex_lock(&m_lock);
+                    assign();
                 }
 
                 void unlock()
                 {
-                    m_holder = 0;
+                    unassgin();
                     pthread_mutex_unlock(&m_lock);
                 }
                 // only used in Condition
                 void unassgin()
                 {
                     m_holder = 0;
+                }
+
+                void assign()
+                {
+                    m_holder = MyNet::ThreadOp::tid();
                 }
                 // only used in Condition
                 pthread_mutex_t* getMutex()
@@ -60,7 +64,7 @@ namespace base
 
                         ~UnassginMutexLockGuard()
                         {
-
+                            m_mutex.assign();
                         }
                     private:
                         MutexLock& m_mutex;
