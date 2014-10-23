@@ -1,0 +1,38 @@
+                  学习pyspider的笔记
+pyspider依赖：
+	request库: http://cn.python-requests.org/zh_CN/latest/
+		   https://github.com/kennethreitz/requests
+
+	pyquery库：https://pythonhosted.org/pyquery/#
+		   https://github.com/gawel/pyquery/
+
+1. class的__enter__，__exit__， __repr__函数:
+   class定义__enter和__exit__函数使得对象可以用在with语句中，这样可以在
+语句结束时自己做一些清理工作，用在异常处理时特别有用：
+eg: /libs/utils.py
+    class timeout:
+	..........
+	def __enter__(self):
+            if self.seconds:
+                signal.signal(signal.SIGALRM, self.handle_timeout)
+                signal.alarm(self.seconds)
+        def __exit__(self, type, value, traceback):
+            if self.seconds:
+                signal.alarm(0)
+    在进入with语句时，设定SIGALRM的信号处理函数为handle_timeout，然后启动定时，
+在离开with语句时，取消定时
+reference: http://stackoverflow.com/questions/1984325/explaining-pythons-enter-and-exit
+
+    __repr__函数：
+    这个函数，对应repr(object)这个功能。意思是当需要显示一个对象在屏幕上时，将这个对象
+的属性或者是方法整理成一个可以打印输出的格式。
+    这个功能与eval也可以对应。打印出的结果直接放到eval里，通常可以获得原来的对象。
+    比如t1=datetime.datetime.now()
+        print repr(t1)
+    结果是
+        datetime.datetime(2014, 9, 9, 6, 34, 29, 756000)
+
+    与repr函数相似的是str函数，不过str函数是给人看的，repr函数是给python解释器看的
+
+2.
+
