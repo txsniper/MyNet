@@ -62,6 +62,11 @@ namespace base
         {
             return (m_nJulianDayNum > 0);
         }
+
+        int weekDay() const
+        {
+            return (julianDayNumber() + 1) % NumDaysPerWeek;
+        }
 	private:
 		int m_nJulianDayNum;
 	};
