@@ -15,15 +15,17 @@ namespace base
     class BoundedBlockingQueue : private MyNet::Noncopyable
     {
         public:
-            BoundedBlockingQueue(int capacity)
-                : m_lock(), m_full(m_lock), m_empty(m_lock), m_queue(capacity)
+            BoundedBlockingQueue(int maxSize)
+                : m_queue(maxSize), m_mutex(), m_full(m_mutex), m_empty(m_mutex)
             {
 
             }
 
+            ~BoundedBlockingQueue() {}
+
             void put(const T& value)
             {
-                MutexLockGuard(m_lock);
+                MyNet::base::MutexLockGuard guard(m_mutex);
                 while(m_queue.full())
                 {
                     m_full.wait();
@@ -35,7 +37,7 @@ namespace base
 
             T get()
             {
-                MutexLockGuard(m_lock);
+                MyNet::base::MutexLockGuard guard(m_mutex);
                 while(m_queue.empty())
                 {
                     m_empty.wait();
@@ -44,31 +46,31 @@ namespace base
                 T value(m_queue.front());
                 m_queue.pop_front();
                 m_full.notify();
-                return T;
+                return value;
             }
 
             bool empty() const
             {
-                MutexLockGuard(m_lock);
+                MyNet::base::MutexLockGuard guard(m_mutex);
                 return m_queue.empty();
             }
 
             bool capacity() const
             {
-                MutexLockGuard(m_lock);
+                MyNet::base::MutexLockGuard guard(m_mutex);
                 return m_queue.capacity();
             }
 
             size_t size() const
             {
-                MutexLockGuard(m_lock);
+                MyNet::base::MutexLockGuard guard(m_mutex);
                 return m_queue.size();
             }
         private:
-            MutexLock m_lock;
-            Condition m_full;
-            Condition m_empty;
             boost::circular_buffer<T> m_queue;
+            mutable MyNet::base::MutexLock m_mutex;
+            MyNet::base::Condition m_full;
+            MyNet::base::Condition m_empty;
     };
 }
 }

@@ -4,3 +4,6 @@ add_executable(blockingQueue_unittest BlockingQueue_unittest.cc)
 target_link_libraries(blockingQueue_unittest mynet_base)
 add_executable(blockingQueue_bench_test BlockingQueue_bench_test.cc)
 target_link_libraries(blockingQueue_bench_test mynet_base)
+add_executable(boundedblockingQueue_unittest BoundedBlockingQueue_unittest.cc)
+target_link_libraries(boundedblockingQueue_unittest mynet_base)
+
