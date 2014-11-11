@@ -50,7 +50,12 @@ namespace base
             char m_buff[kBUFF_SIZE];
     };
 
-    int readFile(const std::string& filename,
+    /*
+     * 注意：给readFile增加inline声明，否则会出现function multiple definition,
+     * 出现这个问题的原因在于#include了本头文件的编译单元(.cxx)就将函数的定义
+     * 引入了本单元，如果链接这几个单元(例如可执行程序链接库文件)，则出现多重定义问题
+     * */
+     inline int readFile(const std::string& filename,
                  int maxSize,
                  std::string* content,
                  int64_t* fileSize = NULL,
