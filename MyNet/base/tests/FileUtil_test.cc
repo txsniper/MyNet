@@ -15,6 +15,10 @@ int main()
     ::printf("%d %zd %" PRIu64 "\n", err, data.size(), size);
     err = MyNet::base::readFile("/proc/self/cmdline", 1024, &data, &size);
     ::printf("%d %zd %" PRIu64 "\n", err, data.size(), size);
-
-
+    err = MyNet::base::readFile("/dev/zero", 102400, &data, NULL);
+    ::printf("%d %zd %" PRIu64 "\n", err, data.size(), size);
+    err = MyNet::base::readFile("/home/sniper/github/MyNet/MyNet/base/Thread.h", 1024, &data, &size);
+    ::printf("%d %zd %" PRIu64 "\n", err, data.size(), size);
+    err = MyNet::base::readFile("/home/sniper/github/MyNet/MyNet/base/Thread.h", 102400, &data, &size);
+    ::printf("%d %zd %" PRIu64 "\n", err, data.size(), size);
 }

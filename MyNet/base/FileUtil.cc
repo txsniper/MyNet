@@ -70,6 +70,7 @@ namespace base
         int64_t readSize = 0;
         if(m_fd >= 0)
         {
+            data.clear();
             struct stat fileStat;
             int ret = ::fstat(m_fd, &fileStat);
             if(ret == 0)
@@ -105,7 +106,8 @@ namespace base
         {
             while(readed < readSize)
             {
-                ssize_t n = ::read(m_fd, m_buff, sizeof(m_buff));
+                size_t need_read = std::min(sizeof(m_buff), maxSize - data.size());
+                ssize_t n = ::read(m_fd, m_buff, need_read);
                 if(n > 0)
                 {
                     readed += n;
