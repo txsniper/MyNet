@@ -199,7 +199,9 @@ namespace base
 
     size_t WriteFile::write(const char* line, size_t n)
     {
-        return ::fwrite_unlocked(line, n, 1, m_file);
+        // 这里第二个参数和第三个参数的含义是：将line看做由
+        // 单个字符对象组成的对象列表，因此对象长度为1，有n个对象
+        return ::fwrite_unlocked(line, 1, n, m_file);
     }
 
 }

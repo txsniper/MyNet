@@ -52,7 +52,7 @@ namespace base
     void LogFile::append_unlocked(const char* line, size_t n)
     {
         m_scpFile->writeLine(line, n);
-        if(m_scpFile->size() >= m_rollSize)
+        if(m_scpFile->WritenBytes() >= m_rollSize)
         {
             rollFile();
         }

@@ -35,7 +35,7 @@ namespace base
             ~WriteFile();
             size_t writeLine(const std::string& line);
             size_t writeLine(const char* line, size_t n);
-            size_t size() const {return m_nBytesWritten;}
+            size_t WritenBytes() const {return m_nBytesWritten;}
             bool valid() const { return m_valid;}
             void flush();
         private:
@@ -51,11 +51,25 @@ namespace base
     };
 
     /*
-     * 注意：给readFile增加inline声明，否则会出现function multiple definition,
+     * 注意：全局函数实现在头文件中需要加上inline或者static(限制本编译单元)，否则会出现function multiple definition,
      * 出现这个问题的原因在于#include了本头文件的编译单元(.cxx)就将函数的定义
-     * 引入了本单元，如果链接这几个单元(例如可执行程序链接库文件)，则出现多重定义问题
+     * 引入了本单元，如果链接这几个单元(例如可执行程序链接库文件)，则出现多重定义问题,
+     * 模板函数不会出现此问题
      * */
-     inline int readFile(const std::string& filename,
+    /*
+    template <typename String>
+    int readFile(const String& filename,
+                 int maxSize,
+                 String* content,
+                 int64_t* fileSize = NULL,
+                 int64_t* modifyTime = NULL,
+                 int64_t* createTime = NULL)
+    {
+        ReadSmallFile file(filename);
+        return file.readToString(maxSize, *content, fileSize, modifyTime, createTime);
+    }
+    */
+    inline int readFile(const std::string& filename,
                  int maxSize,
                  std::string* content,
                  int64_t* fileSize = NULL,
@@ -65,7 +79,6 @@ namespace base
         ReadSmallFile file(filename);
         return file.readToString(maxSize, *content, fileSize, modifyTime, createTime);
     }
-
 
 }
 }
