@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <stdint.h>
-#include <string.h>
 #include <stdio.h>
 #include "LogStream.h"
 
@@ -52,57 +51,6 @@ namespace base
       *p = '\0';
       std::reverse(buf, p);
       return p - buf;
-    }
-
-    template <int SIZE>
-    void FixedBuffer<SIZE>::setCookie(void (*cookie)())
-    {
-        m_cookie = cookie;
-    }
-
-    template <int SIZE>
-    size_t FixedBuffer<SIZE>::append(const char* line, const size_t len)
-    {
-        if(avail() >= len)
-        {
-            memcpy(m_cur, line, len);
-            m_cur += len;
-            return len;
-        }
-        else
-        {
-            return 0;
-        }
-    }
-
-    template <int SIZE>
-    size_t FixedBuffer<SIZE>::appendPartial(const char* line, const size_t len)
-    {
-        if(avail() >= len)
-        {
-            memcpy(m_cur, line, len);
-            m_cur += len;
-            return len;
-        }
-        else
-        {
-            size_t nappend = avail();
-            memcpy(m_cur, line, nappend);
-            m_cur += nappend;
-            return nappend;
-        }
-    }
-
-    template<int SIZE>
-    void FixedBuffer<SIZE>::cookieStart()
-    {
-
-    }
-
-    template<int SIZE>
-    void FixedBuffer<SIZE>::cookieEnd()
-    {
-
     }
 
 
