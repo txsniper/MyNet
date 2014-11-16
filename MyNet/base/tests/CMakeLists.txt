@@ -10,6 +10,10 @@ add_executable(date_unittest Date_unittest.cc)
 target_link_libraries(date_unittest mynet_base)
 add_executable(fileutil_unittest FileUtil_test.cc)
 target_link_libraries(fileutil_unittest mynet_base)
-add_executable(logstream_unittest LogStream_test.cc)
-target_link_libraries(logstream_unittest mynet_base)
+
+if(BOOSTTEST_LIBRARY)
+    add_executable(logstream_test LogStream_test.cc)
+    target_link_libraries(logstream_test mynet_base boost_unit_test_framework)
+    add_test(NAME logstream_test COMMAND logstream_test)
+endif()
 

@@ -111,3 +111,16 @@ Thread class 采用shared_ptr来保存Thread id，而ThreadData用weak_ptr来保
 
             reference:
                 http://stackoverflow.com/questions/719043/call-member-function-on-each-element-in-a-container
+
+    10.2 boost 测试套件，需要注意的是利用动态链接的形式使用boost单元测试：
+         在测试的CPP文件中添加:
+         #define BOOST_TEST_MAIN
+         #define BOOST_TEST_DYN_LINK
+         #include <boost/test/unit_test.hpp>
+
+         在CMakelist中添加编译依赖:这里以logstream_test为例：
+          if(BOOSTTEST_LIBRARY)
+                add_executable(logstream_test LogStream_test.cc)
+                target_link_libraries(logstream_test mynet_base boost_unit_test_framework)
+                add_test(NAME logstream_test COMMAND logstream_test)
+          endif()

@@ -58,14 +58,19 @@ namespace MyNet
                     m_cookie = cookie;
                 }
 
-                size_t avail() { return (end()- m_cur);}
+                size_t avail() const { return (end()- m_cur);}
                 void add(size_t len) { m_cur += len;}
                 void reset() { m_cur = m_buff; }
-                size_t length(){ return (m_cur - m_buff);}
+                size_t length() const { return (m_cur - m_buff);}
                 char* current() { return m_cur; }
                 const char* data() const { return m_buff; }
                 const char* end() const { return (m_buff + sizeof(m_buff));}
-            private:
+
+                std::string asString() const
+                {
+                    return std::string(data(), length());
+                }
+           private:
                 static void cookieStart()
                 {
 
@@ -107,6 +112,15 @@ namespace MyNet
 
                 size_t append(const char* line, size_t len);
 
+                const Buffer& buffer() const
+                {
+                    return m_buff;
+                }
+
+                void resetBuffer()
+                {
+                    m_buff.reset();
+                }
             private:
                 template <typename T>
                     void formatInteger(T value);
