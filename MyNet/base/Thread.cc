@@ -1,10 +1,14 @@
 #include "Thread.h"
 #include "ThreadOp.h"
+#include "Timestamp.h"
 #include <sys/syscall.h>
+#include <stdio.h>
+
 #include <pthread.h>
 #include <assert.h>
 #include <boost/weak_ptr.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/static_assert.hpp>
 
 namespace MyNet
 {
@@ -12,19 +16,57 @@ namespace ThreadOp
 {
         __thread int t_cachedtid = 0;
         __thread const char* t_threadname = "default";
+        __thread char t_tidString[32];
+        __thread int t_tidStringLength = 6;
+
+        const bool sameType = boost::is_same<int, pid_t>::value;
+        BOOST_STATIC_ASSERT(sameType);
 
         pid_t gettid()
         {
             return static_cast<pid_t> (::syscall(SYS_gettid));
         }
 
+        void afterFork()
+        {
+            t_cachedtid = 0;
+            t_threadname = "main";
+            tid();
+        }
         void cacheTid()
         {
             if(t_cachedtid == 0)
             {
                 t_cachedtid = gettid();
+                t_tidStringLength = snprintf(t_tidString, sizeof(t_tidString), "%5d ", t_cachedtid);
             }
         }
+
+        bool isMainThread()
+        {
+            return tid() == ::getpid();
+        }
+
+        void sleepUsec(int64_t usec)
+        {
+            struct timespec ts = {0, 0};
+            ts.tv_sec = static_cast<time_t>(usec / base::Timestamp::kMicroSecsPerSecond);
+            ts.tv_nsec = static_cast<long>(usec % base::Timestamp::kMicroSecsPerSecond * 1000);
+            ::nanosleep(&ts, NULL);
+        }
+
+        class ThreadNameInitializer
+        {
+            public:
+                ThreadNameInitializer()
+                {
+                    t_threadname = "main";
+                    tid();
+                    pthread_atfork(NULL, NULL, &afterFork);
+                }
+        };
+
+        ThreadNameInitializer init;
 
         typedef struct ThreadData
         {
@@ -51,8 +93,9 @@ namespace ThreadOp
                     *ptid = tid;
                     ptid.reset(); // 上面的lock增加了引用计数，这里reset减小它
                 }
-
+                t_threadname = m_name.empty() ? "MyNetThread" : m_name.c_str();
                 m_func();
+                t_threadname = "finished";
             }
         } ThreadData;
 
@@ -74,7 +117,7 @@ MyNet::base::Thread::Thread(const ThreadFunc& func, const std::string& name)
       m_joined(false),
       m_func(func)
 {
-    m_ThreadNum.incAndGet();
+    setDefaultName();
 }
 
 MyNet::base::Thread::~Thread()
@@ -85,6 +128,16 @@ MyNet::base::Thread::~Thread()
     }
 }
 
+void MyNet::base::Thread::setDefaultName()
+{
+    int num = m_ThreadNum.incAndGet();
+    if (m_name.empty())
+    {
+        char buf[32];
+        snprintf(buf, sizeof(buf), "Thread%d", num);
+        m_name = buf;
+    }
+}
 void MyNet::base::Thread::start()
 {
     assert(!m_started);

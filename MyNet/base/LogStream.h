@@ -127,6 +127,25 @@ namespace MyNet
                 Buffer m_buff;
                 static const size_t kMaxNumericSize = 32;
         };
+
+        class Fmt
+        {
+            public:
+                template<typename T>
+                Fmt(const char* fmt, T val);
+                const char* data() const {return m_buf;}
+                int length() const { return m_len;}
+            private:
+                char m_buf[32];
+                int m_len;
+        };
+
+
+        inline LogStream& operator << (LogStream& s, const Fmt& fmt)
+        {
+            s.append(fmt.data(), fmt.length());
+            return s;
+        }
     }
 }
 #endif

@@ -43,7 +43,20 @@ Thread class 采用shared_ptr来保存Thread id，而ThreadData用weak_ptr来保
         eg: 多线程日志的实现中计时功能
 
 9.  多线程日志的实现:
-    9.1 使用样例：
+    9.1 基础类
+        LOG_INFO(or LOG_DEBUG 等宏):
+        LogFile:   日志文件类，每一个LogFile代表了以basename_为基准文件名的一类日志文件，在
+                   一定条件下(超时 and 写入数据的大小)flush或roll，外界只需要提供运行参数(basename, flushInterval)
+                   并写入数据即可
+        LogStream: 包含一个缓冲区的日志流，通过重载operator<<实现将各种类型的数据格式化写入
+                   缓冲区。
+        Logger(Logging.h): Logger类提供了对LogStream的操作，并根据Logger定义了LOG_INFO等用户
+                   使用的输入宏，提供了重定向输出的接口(setOutput)，当Logger在析构的时候会调用
+                   重定向的函数OutputFunc将LogStream中的数据输出到指定位置
+
+        AsyncLogging: 封装了高效的日志处理核心流程
+
+    9.2 使用样例：
     主线程:
         void outputFunc(const char* line, size_t n)
         {
@@ -67,17 +80,8 @@ Thread class 采用shared_ptr来保存Thread id，而ThreadData用weak_ptr来保
     AsyncLogging::threadFunc 日志线程:
         根据策略将日志写入文件，详细见《linux多线程服务端编程》第五章 P107
 
-        LOG_INFO(or LOG_DEBUG 等宏):
-        LogFile:   日志文件类，每一个LogFile代表了以basename_为基准文件名的一类日志文件，在
-                   一定条件下(超时 and 写入数据的大小)flush或roll，外界只需要提供运行参数(basename, flushInterval)
-                   并写入数据即可
-        LogStream: 包含一个缓冲区的日志流，通过重载operator<<实现将各种类型的数据格式化写入
-                   缓冲区。
-        Logger(Logging.h): Logger类提供了对LogStream的操作，并根据Logger定义了LOG_INFO等用户
-                   使用的输入宏
-        AsyncLogging: 封装了高效的日志处理核心流程
 
-    9.2 要点：(1). 每个线程写一个日志文件，因此可以使用fwrite_nonlocked
+    9.3 要点：(1). 每个线程写一个日志文件，因此可以使用fwrite_nonlocked
               (2). 日志文件的滚动(roll)有两个条件：1. rollSize  2. rollPeriod，
                    日志文件写到磁盘(flush)也是两个条件：1. 向日志文件写入数据(append)次数
                    2. flush Period.
@@ -86,6 +90,10 @@ Thread class 采用shared_ptr来保存Thread id，而ThreadData用weak_ptr来保
                    定时flush和定时roll
                    eg: AsyncLogging.cc : AsyncLogging::threadFunc
                                         ----> cond_.waitForSeconds(flushInterval_);
+
+    9.4 一些特点：
+              (1). 日志级别的设定可以通过环境变量来进行。(Logging.cc --- initLogService)
+              (2). 通过字符数组的方式将字符串长度的计算从运行期提到编译期，见class T
 
 10. boost的一些用法：
     10.1 boost::bind : boost::bind不仅能用来绑定函数传递参数，还用在foreach循环中调用每个成员

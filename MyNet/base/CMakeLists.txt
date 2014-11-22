@@ -10,6 +10,7 @@ set(base_SRCS
   ThreadPool.cc
   ProcessInfo.cc
   LogFile.cc
+  Logging.cc
   )
 
 add_library(mynet_base ${base_SRCS})

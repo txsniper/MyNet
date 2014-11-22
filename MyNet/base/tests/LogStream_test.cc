@@ -1,6 +1,7 @@
 #include "../LogStream.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include <limits.h>
 #include <stdint.h>
@@ -81,5 +82,24 @@ BOOST_AUTO_TEST_CASE(testLogStreamInteger)
 
 BOOST_AUTO_TEST_CASE(testLogStreamIntegerLimit)
 {
+    LogStream os;
+    const LogStream::Buffer& os_buffer = os.buffer();
+    os << INT_MAX;
+    BOOST_CHECK_EQUAL(::atoi(os_buffer.asString().c_str()), INT_MAX);
+    os.resetBuffer();
+    os << INT_MIN;
+    BOOST_CHECK_EQUAL(::atoi(os_buffer.asString().c_str()), INT_MIN);
+    os.resetBuffer();
+    os << LLONG_MAX;
+    BOOST_CHECK_EQUAL(::atoll(os_buffer.asString().c_str()), LLONG_MAX);
 
+}
+
+BOOST_AUTO_TEST_CASE(testLogStreamPtr)
+{
+    char *ptr = NULL;
+    LogStream os;
+    const LogStream::Buffer& os_buffer = os.buffer();
+    os << static_cast<void *> (ptr);
+    BOOST_CHECK_EQUAL(os_buffer.asString(), std::string("0x0"));
 }

@@ -32,6 +32,8 @@ namespace base
             {
                 return m_ThreadNum.get();
             }
+
+            void setDefaultName();
         private:
             pthread_t   m_threadId;                 // pthread id, used in pthread functions
             boost::shared_ptr<pid_t> m_sharedtid;   // thread id, used by linux system ,it's different from pthread id

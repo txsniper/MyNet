@@ -131,6 +131,12 @@ namespace base
         return *this;
     }
 
+    LogStream& LogStream::operator<<(long long ll)
+    {
+        formatInteger(ll);
+        return *this;
+    }
+
     LogStream& LogStream::operator<< (unsigned long ul)
     {
         formatInteger(ul);
