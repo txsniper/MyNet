@@ -66,6 +66,11 @@ namespace MyNet
                 const char* data() const { return m_buff; }
                 const char* end() const { return (m_buff + sizeof(m_buff));}
 
+                void bzero()
+                {
+                    ::memset(m_buff, 0, sizeof(m_buff));
+                }
+
                 std::string asString() const
                 {
                     return std::string(data(), length());

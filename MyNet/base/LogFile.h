@@ -16,8 +16,8 @@ namespace base
             LogFile(bool threadsafe,
                     size_t rollsize,
                     const std::string& basename,
-                    int flushInterval,
-                    int checkEveryN
+                    int flushInterval = 3,
+                    int checkEveryN = 1024
                     );
             bool append(const char* line, size_t n);
             void flush();

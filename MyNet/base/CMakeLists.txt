@@ -11,6 +11,7 @@ set(base_SRCS
   ProcessInfo.cc
   LogFile.cc
   Logging.cc
+  AsyncLogging.cc
   )
 
 add_library(mynet_base ${base_SRCS})
