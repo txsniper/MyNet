@@ -39,8 +39,8 @@ namespace MyNet
         {
             "TRACE ",
             "DEBUG ",
-            "INFO ",
-            "WARN ",
+            "INFO  ",
+            "WARN  ",
             "ERROR ",
             "FATAL ",
         };

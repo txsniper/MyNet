@@ -96,12 +96,12 @@ inline Logger::LogLevel Logger::logLevel()
     return g_logLevel;
 }
 
-#define LOG_TRACE if (Logger::logLevel() <= Logger::TRACE) \
-    Logger(__FILE__, __LINE__, Logger::TRACE, __func__).stream()
-#define LOG_DEBUG if (Logger::logLevel() <= Logger::DEBUG) \
-    Logger(__FILE__, __LINE__, Logger::DEBUG, __func__).stream()
-#define LOG_INFO if (Logger::logLevel() <= Logger::INFO) \
-    Logger(__FILE__, __LINE__).stream()
-#define LOG_WARN Logger(__FILE__, __LINE__, Logger::WARN).stream()
+#define LOG_TRACE if (MyNet::base::Logger::logLevel() <= MyNet::base::Logger::TRACE) \
+    MyNet::base::Logger(__FILE__, __LINE__, MyNet::base::Logger::TRACE, __func__).stream()
+#define LOG_DEBUG if (MyNet::base::Logger::logLevel() <= MyNet::base::Logger::DEBUG) \
+    MyNet::base::Logger(__FILE__, __LINE__, MyNet::base::Logger::DEBUG, __func__).stream()
+#define LOG_INFO if (MyNet::base::Logger::logLevel() <= MyNet::base::Logger::INFO) \
+    MyNet::base::Logger(__FILE__, __LINE__).stream()
+#define LOG_WARN MyNet::base::Logger(__FILE__, __LINE__, MyNet::base::Logger::WARN).stream()
 }
 }

@@ -44,7 +44,11 @@ Thread class 采用shared_ptr来保存Thread id，而ThreadData用weak_ptr来保
 
 9.  多线程日志的实现:
     9.1 基础类
-        LOG_INFO(or LOG_DEBUG 等宏):
+        LOG_INFO(or LOG_DEBUG 等宏): 在定义这些宏的时候需要将涉及的类名写完整(包括namespace)，比如：
+                #define LOG_WARN muduo::Logger(__FILE__, __LINE__, muduo::Logger::WARN).stream() 
+                不能写成：
+                #define LOG_WARN Logger(__FILE__, __LINE__, Logger::WARN).stream() 
+
         LogFile:   日志文件类，每一个LogFile代表了以basename_为基准文件名的一类日志文件，在
                    一定条件下(超时 and 写入数据的大小)flush或roll，外界只需要提供运行参数(basename, flushInterval)
                    并写入数据即可
@@ -132,3 +136,7 @@ Thread class 采用shared_ptr来保存Thread id，而ThreadData用weak_ptr来保
                 target_link_libraries(logstream_test mynet_base boost_unit_test_framework)
                 add_test(NAME logstream_test COMMAND logstream_test)
           endif()
+
+        BOOST_STATIC_ASSERT: 编译期断言检查
+        assert: 运行期断言检查
+

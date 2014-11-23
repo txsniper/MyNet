@@ -27,7 +27,7 @@ namespace ProcInfo
         return 0;
     }
 
-    // 运用一个线程私有变量(t_pids)并不是必须 
+    // 运用一个线程私有变量(t_pids)并不是必须
     __thread std::vector<pid_t>* t_pids = NULL;
     int taskDirFilter(const struct dirent* d)
     {
@@ -86,6 +86,19 @@ namespace ProcInfo
     uid_t euid()
     {
         return ::geteuid();
+    }
+
+    std::string hostname()
+    {
+        char name[256];
+        if (::gethostname(name, sizeof(name)) == 0)
+        {
+            name[sizeof(name)-1] = '\0';
+            return name;
+        }
+        else
+            return "unknownhost";
+
     }
 
     // 在进程启动的时候确定startTime, clockTicks, pageSize

@@ -1,7 +1,12 @@
 #include <algorithm>
 #include <stdint.h>
 #include <stdio.h>
+#include <assert.h>
+
 #include "LogStream.h"
+
+#include <boost/static_assert.hpp>
+#include <boost/type_traits/is_arithmetic.hpp>
 
 //必须忽略-Wtype-limits，否则当把convert函数的模板参数T
 //具体化为无符号类型时，if(value < 0)会报warnning:
@@ -177,6 +182,16 @@ namespace base
         return *this;
     }
 
+    template<typename T>
+    Fmt::Fmt(const char* fmt, T val)
+    {
+        // BOOST_STATIC_ASSERT : 编译期断言
+        // assert: 运行期断言
+        BOOST_STATIC_ASSERT(boost::is_arithmetic<T>::value == true);
+        m_len = ::snprintf(m_buf, sizeof(m_buf), fmt, val);
+        assert(m_len < sizeof(m_buf));
+    }
 
+    template Fmt::Fmt(const char* fmt, int);
 }
 }
