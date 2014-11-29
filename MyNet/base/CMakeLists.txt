@@ -12,6 +12,7 @@ set(base_SRCS
   LogFile.cc
   Logging.cc
   AsyncLogging.cc
+  Exception.cc
   )
 
 add_library(mynet_base ${base_SRCS})

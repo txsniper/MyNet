@@ -31,7 +31,7 @@ namespace base
             void append(const char* logline, size_t length);
         private:
 
-            // 必须将复制构造函数和复制操作符声明为private，否则boost编译报错
+            // 必须将复制构造函数和复制操作符声明为private，否则编译boost的ptr_vector报错
             AsyncLogging(const AsyncLogging& );
             void operator = (const AsyncLogging&);
 
