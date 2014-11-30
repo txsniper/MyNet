@@ -140,3 +140,41 @@ Thread class 采用shared_ptr来保存Thread id，而ThreadData用weak_ptr来保
         BOOST_STATIC_ASSERT: 编译期断言检查
         assert: 运行期断言检查
 
+11. Exception类(异常处理)
+    1. C++11中的noexcept关键字主要用于声明函数不抛出异常，而在此之前，可以使用throw()来实现相同的目的
+       eg:
+        void no_throw() noexcept;
+        void foo(int) throw();
+    2. backtrace系列函数用来获取函数的调用栈
+        #include <execinfo.h>
+
+        int backtrace(void **buffer, int size);
+        char **backtrace_symbols(void *const *buffer, int size);
+        void backtrace_symbols_fd(void *const *buffer, int size, int fd);
+
+        eg:
+        void myfunc3(void)
+        {
+            int j, nptrs;
+            #define SIZE 100
+            void *buffer[100];
+            char **strings;
+
+            nptrs = backtrace(buffer, SIZE);
+            printf("backtrace() returned %d addresses\n", nptrs);
+
+            /*
+                The call backtrace_symbols_fd(buffer, nptrs, STDOUT_FILENO)
+                would produce similar output to the following:
+            */
+
+            strings = backtrace_symbols(buffer, nptrs);
+            if (strings == NULL) {
+                perror("backtrace_symbols");
+                exit(EXIT_FAILURE);
+            }
+
+            for (j = 0; j < nptrs; j++)
+                printf("%s\n", strings[j]);
+            free(strings);
+        }
