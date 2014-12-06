@@ -34,7 +34,7 @@ namespace net
 
             uint32_t ipNetEndian() const
             {
-                return addr_.sockaddr_in.s_addr;
+                return addr_.sin_addr.s_addr;
             }
 
             uint16_t portNetEndian() const
@@ -43,7 +43,8 @@ namespace net
             }
 
             std::string toIp() const;
-            std::string toPort() const;
+            std::string toIpPort() const;
+            uint16_t toPort() const;
 
         private:
             struct sockaddr_in addr_;
