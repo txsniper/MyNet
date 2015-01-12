@@ -9,6 +9,7 @@ set(net_SRCS
   SocketsOps.cc
   InetAddress.cc
   Socket.cc
+  Channel.cc
   )
 
 add_library(muduo_net ${net_SRCS})
@@ -25,6 +26,7 @@ set(HEADERS
   Endian.h
   InetAddress.h
   Socket.h
+  Channel.h
   )
 install(FILES ${HEADERS} DESTINATION include/muduo/net)
 

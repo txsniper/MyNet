@@ -193,3 +193,12 @@ net目录下：
         会在编译时报错，有利于提前发现程序中的bug
 
     2. Endian.h : 利用endian.h中的函数进行主机字节序到网络字节序之间转换(网络字节序是大端字节序)
+    3. Channel.h: Channel建立了文件描述符(fd)与事件处理函数的对应关系，它并不拥有fd，只是负责注册，修改
+                  fd感兴趣的事件和事件处理函数。每个Channel只属于一个EventLoop，并且它的生命周期由拥有者管理。
+                  考虑一个问题：
+                        当断开一个连接时，Channel会调用handleClose处理关闭事件(Channel属于一个TcpConnection)，如果在
+                        handleClose中销毁了TcpConnection，那么会出什么问题(TcpConnection拥有Channel,Channel的生命周期由
+                        TcpConnection控制)？
+                        解决方案：Channel中有一个tie_成员(weak_ptr)，用于TcpConnection在建立连接时绑定自己到tie_，
+                        在Channnel处理事件时(调用handleEvent时)，利用lock将weak_ptr提升为shared_ptr，从而增加TcpConnection的
+                        引用计数，延长TcpConnection的生命周期，使其在handleEvent调用时不会被销毁。
