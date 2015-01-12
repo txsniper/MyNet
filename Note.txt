@@ -202,3 +202,8 @@ net目录下：
                         解决方案：Channel中有一个tie_成员(weak_ptr)，用于TcpConnection在建立连接时绑定自己到tie_，
                         在Channnel处理事件时(调用handleEvent时)，利用lock将weak_ptr提升为shared_ptr，从而增加TcpConnection的
                         引用计数，延长TcpConnection的生命周期，使其在handleEvent调用时不会被销毁。
+
+    4. Acceptor: Acceptor用于接收新连接，在连接数太多达到上限时，muduo采用了一个很巧妙的方式：
+                 首先获取一个空闲文件描述符idleFd，当accept返回EMFILE时(没有描述符可分配)，首先关闭idleFd，然后accept，这时
+                 accept会成功返回新连接的fd，接着关闭新连接的fd(连接数达到上限，关闭新连接)，然后重新获取一个空闲的文件描述符
+                 idleFd。这样利用一个idleFd，我们可以处理连接太多时关闭新连接的状况。
