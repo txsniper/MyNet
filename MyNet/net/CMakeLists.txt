@@ -10,6 +10,7 @@ set(net_SRCS
   InetAddress.cc
   Socket.cc
   Channel.cc
+  Acceptor.cc
   )
 
 add_library(muduo_net ${net_SRCS})
@@ -27,6 +28,7 @@ set(HEADERS
   InetAddress.h
   Socket.h
   Channel.h
+  Acceptor.h
   )
 install(FILES ${HEADERS} DESTINATION include/muduo/net)
 
