@@ -305,10 +305,11 @@ namespace MyNet
                     prepend(&x, sizeof x);
                 }
 
+                // prepend用于在正式数据前加入其他的数据，比如
+                // 整体数据的长度，可以方便实现其他功能
                 void prepend(const void* /*restrict*/ data, size_t len)
                 {
                     assert(len <= prependableBytes());
-                    //TODO: 这里为什么是 readerIndex_ 减去 len
                     readerIndex_ -= len;
                     const char* d = static_cast<const char*>(data);
                     std::copy(d, d+len, begin()+readerIndex_);
