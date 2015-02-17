@@ -344,6 +344,7 @@ namespace MyNet
 
                 void makeSpace(size_t len)
                 {
+                    // 总空间不够，resize一下
                     if (writableBytes() + prependableBytes() < len + kCheapPrepend)
                     {
                         // FIXME: move readable data

@@ -207,3 +207,10 @@ net目录下：
                  首先获取一个空闲文件描述符idleFd，当accept返回EMFILE时(没有描述符可分配)，首先关闭idleFd，然后accept，这时
                  accept会成功返回新连接的fd，接着关闭新连接的fd(连接数达到上限，关闭新连接)，然后重新获取一个空闲的文件描述符
                  idleFd。这样利用一个idleFd，我们可以处理连接太多时关闭新连接的状况。
+
+    5. Buffer : Buffer中使用了内存腾挪来应对有些时候写缓冲区太小的情况，使用了std::copy函数，需要注意的是内存移动，拷贝函数在
+                读写缓冲区overlap情况下的处理：
+                    When copying overlapping ranges, std::copy is appropriate when copying to the left (beginning of 
+                the destination range is outside the source range) while std::copy_backward is appropriate when 
+                copying to the right (end of the destination range is outside the source range).
+                                    ------ http://en.cppreference.com/w/cpp/algorithm/copy
